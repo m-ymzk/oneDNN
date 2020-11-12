@@ -94,6 +94,18 @@ private:
             + vreg_to_preserve * vreg_len_preserve;
 
 public:
+    enum {
+        _cmp_eq_oq = 0u,
+        _cmp_lt_os = 1u,
+        _cmp_le_os = 2u,
+        _cmp_neq_uq = 4u,
+        _cmp_nlt_us = 5u,
+        _cmp_nle_us = 6u,
+
+        _op_floor = 1u,
+        _op_mxcsr = 4u,
+    };
+
     Xbyak_aarch64::WReg W_TMP_0 = w23;
     Xbyak_aarch64::WReg W_TMP_1 = w24;
     Xbyak_aarch64::WReg W_TMP_2 = w25;
@@ -142,8 +154,17 @@ public:
         ptrue(P_MSB_256.b, Xbyak_aarch64::VL32);
         not_(P_MSB_384.b, P_ALL_ONE / Xbyak_aarch64::T_z, P_MSB_384.b);
         not_(P_MSB_256.b, P_ALL_ONE / Xbyak_aarch64::T_z, P_MSB_256.b);
-        //pfalse(P_ALL_ZERO.b);
+        pfalse(P_ALL_ZERO.b);
 
+        mov(x7, x0); /* First arg. */
+        mov(x6, x1); /* Sedond arg. */
+        mov(x2, x2);
+        mov(x1, x3);
+        mov(x8, x4);
+        mov(x9, x5); /* 6-th arg. */
+        mov(x4, sp); /* Intel64's stack register is 4-th register. */
+        sub_imm(x22, x4, 0x20000,
+                X_TMP_0); //X_TRANSLATOR_STACK:x22, xt_stack_offset:0x20000
     }
 
     void postamble() {
