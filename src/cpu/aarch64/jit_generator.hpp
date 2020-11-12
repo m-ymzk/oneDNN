@@ -142,7 +142,8 @@ public:
         ptrue(P_MSB_256.b, Xbyak_aarch64::VL32);
         not_(P_MSB_384.b, P_ALL_ONE / Xbyak_aarch64::T_z, P_MSB_384.b);
         not_(P_MSB_256.b, P_ALL_ONE / Xbyak_aarch64::T_z, P_MSB_256.b);
-        pfalse(P_ALL_ZERO.b);
+        //pfalse(P_ALL_ZERO.b);
+
     }
 
     void postamble() {
