@@ -30,6 +30,8 @@
 
 #if DNNL_AARCH64 && DNNL_AARCH64_USE_ACL
 #include "cpu/aarch64/acl_gemm_convolution.hpp"
+#elif DNNL_AARCH64
+#include "cpu/aarch64/jit_aarch64_sve_512_convolution.hpp"
 using namespace dnnl::impl::cpu::aarch64;
 #endif
 
@@ -101,6 +103,7 @@ const std::map<conv_impl_key_t, std::vector<pd_create_f>> impl_list_map {
         CPU_INSTANCE_X64(jit_sse41_1x1_convolution_fwd_t)
         CPU_INSTANCE_X64(jit_avx2_convolution_fwd_t)
         CPU_INSTANCE_X64(jit_sse41_convolution_fwd_t)
+        CPU_INSTANCE_AARCH64(jit_aarch64_sve_512_convolution_fwd_t<f32>)
         CPU_INSTANCE_AARCH64_ACL(acl_gemm_convolution_fwd_t)
         CPU_INSTANCE(gemm_convolution_fwd_t)
         CPU_INSTANCE(ref_convolution_fwd_t<f32>)
@@ -139,6 +142,7 @@ const std::map<conv_impl_key_t, std::vector<pd_create_f>> impl_list_map {
         CPU_INSTANCE_X64(jit_avx2_1x1_convolution_bwd_data_t)
         CPU_INSTANCE_X64(jit_sse41_dw_convolution_bwd_data_t)
         CPU_INSTANCE_X64(jit_avx2_convolution_bwd_data_t)
+        CPU_INSTANCE_AARCH64(jit_aarch64_sve_512_convolution_bwd_data_t<f32>)
         CPU_INSTANCE(gemm_convolution_bwd_data_t)
         CPU_INSTANCE(ref_convolution_bwd_data_t<f32, f32, f32, f32>)
         nullptr,
@@ -170,6 +174,7 @@ const std::map<conv_impl_key_t, std::vector<pd_create_f>> impl_list_map {
         CPU_INSTANCE_X64(jit_avx2_1x1_convolution_bwd_weights_t)
         CPU_INSTANCE_X64(jit_sse41_dw_convolution_bwd_weights_t)
         CPU_INSTANCE_X64(jit_avx2_convolution_bwd_weights_t)
+        CPU_INSTANCE_AARCH64(jit_aarch64_sve_512_convolution_bwd_weights_t<f32>)
         CPU_INSTANCE(gemm_convolution_bwd_weights_t)
         CPU_INSTANCE(ref_convolution_bwd_weights_t<f32, f32, f32, f32>)
         nullptr,
