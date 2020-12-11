@@ -98,7 +98,9 @@ void generate(jit_generator &code, Xbyak_aarch64::XReg reg_ctx,
 struct jit_t : public jit_generator {
 
     void generate() override {
+        this->preamble();
         simple_barrier::generate(*this, abi_param1, abi_param2);
+        this->postamble();
         ret();
     }
 
