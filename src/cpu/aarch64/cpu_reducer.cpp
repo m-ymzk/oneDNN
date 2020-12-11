@@ -155,32 +155,28 @@ struct reducer_2d_driver_f_s_32_t : public reducer_2d_driver_t<data_type> {
         : reducer_2d_driver_t<data_type>(
                 n_src, src_ld, src_step, dst_step, nullify_dst) {}
 
-    void uni_load(const Vmm &z1, const XReg &src, size_t off, int load_len){
+    void uni_load(const Vmm &z1, const XReg &src, size_t off, int load_len) {
         auto src_ptr = (off == 0) ? src : reg_tmp_ptr;
-        if(off != 0)
-            this->add_imm(src_ptr, src, off, reg_tmp_imm);
+        if (off != 0) this->add_imm(src_ptr, src, off, reg_tmp_imm);
 
-        if(load_len == typesize)
+        if (load_len == typesize)
             this->ld1w(z1, preg_one.s, ptr(src_ptr));
-        else if(load_len == vlen)
+        else if (load_len == vlen)
             this->ld1w(z1, preg_all.s, ptr(src_ptr));
         else
             assert(!"unsupported");
-
     }
 
-    void uni_store(const Vmm &z1, const XReg &dst, size_t off, int load_len){
+    void uni_store(const Vmm &z1, const XReg &dst, size_t off, int load_len) {
         auto dst_ptr = (off == 0) ? dst : reg_tmp_ptr;
-        if(off != 0)
-            this->add_imm(dst_ptr, dst, off, reg_tmp_imm);
+        if (off != 0) this->add_imm(dst_ptr, dst, off, reg_tmp_imm);
 
-        if(load_len == typesize)
+        if (load_len == typesize)
             this->st1w(z1, preg_one.s, ptr(dst_ptr));
-        else if(load_len == vlen)
+        else if (load_len == vlen)
             this->st1w(z1, preg_all.s, ptr(dst_ptr));
         else
             assert(!"unsupported");
-
     }
 
     void nullify_dst(int nloads, int load_len) {
@@ -191,7 +187,7 @@ struct reducer_2d_driver_f_s_32_t : public reducer_2d_driver_t<data_type> {
     }
 
     void load_dst(int nloads, int load_len) {
-        for (int i = 0; i < nloads; ++i) 
+        for (int i = 0; i < nloads; ++i)
             uni_load(Vmm(i), reg_dst, i * load_len, load_len);
     }
 
@@ -203,11 +199,14 @@ struct reducer_2d_driver_f_s_32_t : public reducer_2d_driver_t<data_type> {
     void accumulate(int nloads, int load_len, size_t base_off) {
         for (int i = 0; i < nloads; ++i) {
             size_t off = base_off + i * load_len;
-            uni_load(Vmm(cpu_isa_traits<isa>::n_vregs - 1), reg_src, off, load_len);
+            uni_load(Vmm(cpu_isa_traits<isa>::n_vregs - 1), reg_src, off,
+                    load_len);
             if (data_type == data_type::f32)
-                this->fadd(Vmm(i), Vmm(i), Vmm(cpu_isa_traits<isa>::n_vregs - 1));
+                this->fadd(
+                        Vmm(i), Vmm(i), Vmm(cpu_isa_traits<isa>::n_vregs - 1));
             else
-                this->add(Vmm(i), Vmm(i), Vmm(cpu_isa_traits<isa>::n_vregs - 1));
+                this->add(
+                        Vmm(i), Vmm(i), Vmm(cpu_isa_traits<isa>::n_vregs - 1));
         }
     }
 
@@ -217,13 +216,13 @@ struct reducer_2d_driver_f_s_32_t : public reducer_2d_driver_t<data_type> {
 
         const int load_len[nbranches] = {vlen, vlen, typesize};
         Label loop_x_label[nbranches + 1];
-        
+
         this->ptrue(preg_all.b);
-        if( typesize == 4)
+        if (typesize == 4)
             this->ptrue(preg_one.s, VL1);
         else
             assert(!"Unsupported typesize");
-        
+
         this->mov(reg_x, reg_nx);
 
         for (int id = 0; id < nbranches; ++id) {
@@ -243,7 +242,8 @@ struct reducer_2d_driver_f_s_32_t : public reducer_2d_driver_t<data_type> {
                 this->L(loop_srcs);
 
                 accumulate(nloads[id], load_len[id], 0);
-                this->add_imm(reg_src, reg_src, this->src_ld_ * typesize, reg_tmp_imm);
+                this->add_imm(reg_src, reg_src, this->src_ld_ * typesize,
+                        reg_tmp_imm);
 
                 //this->dec(reg_src_id);
                 //this->jnz(loop_srcs, this->T_NEAR);
@@ -264,8 +264,10 @@ struct reducer_2d_driver_f_s_32_t : public reducer_2d_driver_t<data_type> {
 
             store_dst(nloads[id], load_len[id]);
 
-            this->add_imm(reg_src, reg_src, nloads[id] * load_len[id], reg_tmp_imm);
-            this->add_imm(reg_dst, reg_dst, nloads[id] * load_len[id], reg_tmp_imm);
+            this->add_imm(
+                    reg_src, reg_src, nloads[id] * load_len[id], reg_tmp_imm);
+            this->add_imm(
+                    reg_dst, reg_dst, nloads[id] * load_len[id], reg_tmp_imm);
 
             this->sub_imm(reg_x, reg_x, nloads[id] * load_len[id], reg_tmp_imm);
 
@@ -291,8 +293,10 @@ struct reducer_2d_driver_f_s_32_t : public reducer_2d_driver_t<data_type> {
 
         loop_x();
 
-        this->add_imm(reg_dst, reg_dst, this->dst_step_ * typesize, reg_tmp_imm);
-        this->add_imm(reg_src, reg_src, this->src_step_ * typesize, reg_tmp_imm);
+        this->add_imm(
+                reg_dst, reg_dst, this->dst_step_ * typesize, reg_tmp_imm);
+        this->add_imm(
+                reg_src, reg_src, this->src_step_ * typesize, reg_tmp_imm);
 
         this->subs(reg_ny, reg_ny, 1); //dec(reg_ny);
         this->b(NE, ny_loop); // jnz
@@ -400,7 +404,7 @@ void cpu_reducer_t<data_type>::reduce_nolock(int ithr, data_t *dst,
     const data_t *space
             = get_local_ptr(ithr - id_in_grp + 1, dst, scratchpad) + start * cl;
     const size_t len = nstl::min(end * cl, reduction_size) - start * cl;
-        
+
     (*drv_)(d, space, 1, len);
 #endif
 }
