@@ -35,13 +35,13 @@ git submodule sync --recursive
 git submodule update --init --recursive
 
 # Build libxed
-echo "##################################################"
-echo "# Build Intel XED"
-echo "# Wait for a few minutes"
-echo "##################################################"
-cd src/cpu/aarch64/xbyak_translator_aarch64
-${DIR_ROOT}/.github/automation/env/xed.sh -q > /dev/null
-cd ${DIR_ROOT}
+#echo "##################################################"
+#echo "# Build Intel XED"
+#echo "# Wait for a few minutes"
+#echo "##################################################"
+#cd src/cpu/aarch64/xbyak_translator_aarch64
+#${DIR_ROOT}/.github/automation/env/xed.sh -q > /dev/null
+#cd ${DIR_ROOT}
 
 
 # Build oneDNN
@@ -49,7 +49,8 @@ echo "##################################################"
 echo "# Build oneDNN"
 echo "# Wait for a few minutes"
 echo "##################################################"
-.github/automation/build.sh --threading omp --mode Release --source-dir $(pwd) --build-dir $(pwd)/build --cmake-opt "-DDNNL_INDIRECT_JIT_AARCH64=ON -DDNNL_TARGET_ARCH=AARCH64 -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=AARCH64 -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu -DDNNL_TARGET_EMULATOR=qemu-aarch64"
+#.github/automation/build.sh --threading omp --mode Release --source-dir $(pwd) --build-dir $(pwd)/build --cmake-opt "-DDNNL_INDIRECT_JIT_AARCH64=ON -DDNNL_TARGET_ARCH=AARCH64 -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=AARCH64 -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu -DDNNL_TARGET_EMULATOR=qemu-aarch64"
+.github/automation/build.sh --threading omp --mode Release --source-dir $(pwd) --build-dir $(pwd)/build --cmake-opt "-DDNNL_TARGET_ARCH=AARCH64 -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=AARCH64 -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu -DDNNL_TARGET_EMULATOR=qemu-aarch64"
 
 
 # Teste oneDNN
